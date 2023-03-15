@@ -1,0 +1,44 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © kriswaters
+
+//@version=4
+study("Daily Range Time Macros",overlay=true, max_lines_count=20, max_labels_count=20)
+
+
+IntradayMacroColor = input(type=input.color,defval=color.black,title="",inline="daily range macro")
+IntradayMacro = input(true,title="Show Daily Range Macro",inline="threehour")
+
+
+lineStyle = input(title="Line Style", defval=line.style_dotted, options=[line.style_dotted, line.style_dashed, line.style_solid])
+
+[IntradayMacroTime, IntradayMacroOpen]    = security(syminfo.tickerid, '180', [time, open], lookahead = barmerge.lookahead_on)
+// Intraday True Day and Intraday Shifts
+
+// Function drawVerticalLine
+drawVerticalLine(targetTime, label) =>
+    line.new(x1=targetTime, y1=low, x2=targetTime, y2=high, xloc=xloc.bar_time, extend=extend.both, color=color.black, style=line.style_solid, width=2)
+    
+
+drawVerticalLine2(targetTime, label) =>
+    line.new(x1=targetTime, y1=low, x2=targetTime, y2=high, xloc=xloc.bar_time, extend=extend.both, color=color.blue, style=line.style_dashed, width=1)
+    
+
+
+if timeframe.isminutes and timeframe.multiplier < 180 and time == IntradayMacroTime and IntradayMacro
+    line.new(IntradayMacroTime,IntradayMacroOpen,IntradayMacroTime,IntradayMacroOpen+syminfo.mintick,xloc=xloc.bar_time, style=lineStyle, extend=extend.both, color=IntradayMacroColor,width=1)
+    // True day lines
+    targetTime = timestamp("GMT-5", year, month, dayofmonth, 05, 00, 00)
+    drawVerticalLine(targetTime, "Line 1")
+
+    targetTime1 = timestamp("GMT-5", year, month, dayofmonth, 19, 00, 00)
+    drawVerticalLine(targetTime1, "Line 2")
+
+    //intraday shift lines
+    targetTime2 = timestamp("GMT-5", year, month, dayofmonth, 03, 00, 00)
+    drawVerticalLine2(targetTime2, "Line 3")
+
+    targetTime3 = timestamp("GMT-5", year, month, dayofmonth, 11, 00, 00)
+    drawVerticalLine2(targetTime3, "Line 3")
+
+    targetTime4 = timestamp("GMT-5", year, month, dayofmonth, 19, 00, 00)
+    drawVerticalLine2(targetTime4, "Line 4")
